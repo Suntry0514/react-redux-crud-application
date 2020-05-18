@@ -1,3 +1,6 @@
+export const INCREMENT ='INCREMENT'
+export const DECREMENT = 'DECREMENT'
+
 //Action Creater
 export const increment = () => ({
         type: 'INCREMENT'
