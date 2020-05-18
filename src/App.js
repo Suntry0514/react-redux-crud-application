@@ -1,14 +1,17 @@
 //import React, { Component } from 'react';
 import React from 'react';
-//import { render } from '@testing-library/react';
+import PropTypes from 'prop-types';
 
-//functionによるコンポーネント
+/*
+    prop-types：属性にたいする型チェックを行うライブラリ
+*/
+
 function App() {
   //以下はdictionaryみたいなもの
   const propfiles =[
     {name: "Taro", age:10},
     {name: "Hanako", age:5},
-    {name: "Noname"}//defaultPropsで不足データを補っている。
+    {name:"NoName",age:4}
   ]
   return (
     <div>
@@ -27,9 +30,10 @@ function App() {
 const User=(props)=>{
 return <div>Hi! I am {props.name} and {props.age} years old!</div>
 }
-
-User.defaultProps={
-  age:1
+//受け取るコンポーネントを定義
+User.propTypes ={
+  name:PropTypes.string,
+  age: PropTypes.number.isRequired//ageが必ず設定されていなければならない
 }
 //実行するコンポーネントを指定
 export default App;
