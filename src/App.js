@@ -1,39 +1,45 @@
-//import React, { Component } from 'react';
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+//import React from 'react';
 
 /*
-    prop-types：属性にたいする型チェックを行うライブラリ
+    state：子コンポーネントに渡す値が変更可能(propは変更不可)
+          クラスコンポーネントでのみ作成可能
 */
 
-function App() {
-  //以下はdictionaryみたいなもの
-  const propfiles =[
-    {name: "Taro", age:10},
-    {name: "Hanako", age:5},
-    {name:"NoName",age:4}
-  ]
-  return (
-    <div>
-      {
-        propfiles.map((propfiles,index)=>{
-                  //User関数を実行 name,ageは引数と考えればよい
-                  //データ分別をするためにkeyをつける
-          return  <User name={propfiles.name} age={propfiles.age} key={index}/>
-        })
-      }
-    </div>
-  )
-  //上記ではUserコンポーネントにTaroという属性(props)を与えている
+const App = () => (<Counter></Counter>)//Couterの呼び出し
+
+class Counter extends Component {
+
+  //constructor：初期化処理で処理される
+  constructor(props) {
+    super(props)
+    this.state = { count: 0 }//stateに変数と値を設定
+  }
+
+  handlePlusButton = () => {
+    console.log("handlePlusButton");
+    //値を変更するときはsetStateで変更する！！！
+    //setStateが実行されるとrenderが再度実行される
+    this.setState({ count: this.state.count + 1 });
+  }
+
+  handleMinusButton = () => {
+    if (this.state.count <= 0) {
+      return;
+    }
+    this.setState({ count: this.state.count - 1 });
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div>counter : {this.state.count}</div>
+        <button onClick={this.handlePlusButton}>+1</button>
+        <button onClick={this.handleMinusButton}>-1</button>
+      </React.Fragment>
+    )
+  }
 }
-//関数みたいなもの
-const User=(props)=>{
-return <div>Hi! I am {props.name} and {props.age} years old!</div>
-}
-//受け取るコンポーネントを定義
-User.propTypes ={
-  name:PropTypes.string,
-  age: PropTypes.number.isRequired//ageが必ず設定されていなければならない
-}
+
+
 //実行するコンポーネントを指定
 export default App;
