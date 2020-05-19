@@ -1,5 +1,6 @@
 import axios from 'axios'
 export const READ_EVENTS = 'READ_EVENTS'
+export const CREATE_EVENTS = 'CREATE_EVENTS'
 
 
 const ROOT_URL='https://udemy-utils.herokuapp.com/api/v1'
@@ -11,8 +12,18 @@ const QUESRYSTRING ='?token=token123'
     }) */
 //thunkにより関数の中でdispatchが可能になる
 export const readEvents = () => async dispatch => {
-    //axios：http requestの送信をする処理
+    //axios：http get requestの送信をする処理
     const response = await axios.get(ROOT_URL+'/events'+ QUESRYSTRING)
     //reducerを呼び出して値を渡す。dispatchで呼び出す
     dispatch({ type: 'READ_EVENTS' , response})//reade_events.jsを呼び出す
+}
+
+//入力されたtitleとbodyを受け取る
+export const postEvent = (values) => async dispatch => {
+    //axios：http post requestの送信をする処理
+    const response = await axios.post(ROOT_URL+'/events'+ QUESRYSTRING, values)//valuesのデータを送信する
+    console.log(values)
+    console.log(response.data)
+    //reducerを呼び出して値を渡す。dispatchで呼び出す
+    dispatch({ type: CREATE_EVENTS , response})//reade_events.jsを呼び出す
 }

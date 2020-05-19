@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { readEvents } from '../actions'
 import _ from 'lodash'
+import { Link } from 'react-router-dom'//画面上にリンクを設定
 
 class EventsIndex extends Component {
   //コンポーネントがマウントされたときに呼ばれるメソッド
@@ -21,19 +22,23 @@ class EventsIndex extends Component {
   }
   render() {
     return (
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Body</th>
-          </tr>
-        </thead>
+      <React.Fragment>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Body</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {this.renderEvents()}
-        </tbody>
-      </table>
+          <tbody>
+            {this.renderEvents()}
+          </tbody>
+        </table>
+        {/*以下のようすることで現在のURLに「/events/new」が追加されたURLがひらかれる*/}
+        <Link to="/events/new">New Event</Link>
+      </React.Fragment>
     )
   }
 }
