@@ -3,7 +3,10 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'//画面上にリンクを設定
 import { Field, reduxForm } from 'redux-form'
 
-import { getEvent,  putEvent , deleteEvent} from '../actions'
+import { getEvent, putEvent, deleteEvent } from '../actions'
+
+import RaisedButton from 'material-ui/RaisedButton'
+import TextFiled from 'material-ui/TextField'
 
 class EventsShow extends Component {
   constructor(props) {
@@ -12,22 +15,31 @@ class EventsShow extends Component {
     this.onDeleteClick = this.onDeleteClick.bind(this)//メソッドとイベントをリンク
   }
   //レンダリング後、毎回実行される
-  componentDidMount(){
-    const{id} = this.props.match.params
+  componentDidMount() {
+    const { id } = this.props.match.params
     //idがあったら
-    if(id)this.props.getEvent(id)
+    if (id) this.props.getEvent(id)
   }
 
   //入力された値が渡ってくる
   renderFiled(field) {
     const { input, label, type, meta: { touched, error } } = field
+
     return (
-      <div>
-        {/*placeholder：灰色の薄透明な文字を表示  {...input}:？？？？？？？？？？？？*/}
-        <input {...input} placeholder={label} type={type} />
-        {/*バリデーションのメッセージ表示 touched：1度でも触ったらtrueになる*/}
-        {touched && error && <span>{error}</span>}
-      </div>
+      <TextFiled
+        hintText={label}
+        floatingLabelText={label}
+        type={type}
+        errorText={touched && error}
+        {...input}
+        fullWidth={true}
+      />
+      /*       <div>
+              {/*placeholder：灰色の薄透明な文字を表示  {...input}:？？？？？？？？？？？？}
+              <input {...input} placeholder={label} type={type} />
+              {/*バリデーションのメッセージ表示 touched：1度でも触ったらtrueになる}
+              {touched && error && <span>{error}</span>}
+            </div> */
     )
   }
 
@@ -48,27 +60,35 @@ class EventsShow extends Component {
   }
   render() {
     //handleSubmitはrenderが実行されたときに渡ってくる関数のため、値を渡しておく
-    const { handleSubmit, pristine, submitting , invalid} = this.props
+    const { handleSubmit, pristine, submitting, invalid } = this.props
+    const style = { margin: 12 }
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         <div><Field label="Title" name="title" type="text" component={this.renderFiled} /></div>
         <div><Field label="Body" name="body" type="text" component={this.renderFiled} /></div>
+        <RaisedButton label="Submit" type={"submit"} style={style} disabled={pristine || submitting || invalid} />
+        <RaisedButton label="Cancel" style={style} containerElement={<Link to="/" />} />
+        <RaisedButton label="Delete" style={style} onClick={this.onDeleteClick} />
+
+        {/*
+        <div><Field label="Title" name="title" type="text" component={this.renderFiled} /></div>
+        <div><Field label="Body" name="body" type="text" component={this.renderFiled} /></div>
         <div>
-          {/*pristine：項目入力時ボタンが押せる、　submitting：ボタンを押した後、ボタンを押せなくする*/}
+          {/*pristine：項目入力時ボタンが押せる、　submitting：ボタンを押した後、ボタンを押せなくする}
           <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           <Link to="/">CANCEL</Link>
           <Link to="/" onClick={this.onDeleteClick}>DELETE</Link>
-        </div>
+        </div> */}
       </form>
     )
   }
 }
 
-const mapDispatchToProps = ({ deleteEvent ,getEvent, putEvent})
+const mapDispatchToProps = ({ deleteEvent, getEvent, putEvent })
 
-const mapStateToProps=(state, ownProps)=>{
+const mapStateToProps = (state, ownProps) => {
   const event = state.events[ownProps.match.params.id]
-  return {initialValues: event, event}//左：上記の変数。
+  return { initialValues: event, event }//左：上記の変数。
 }
 
 const validate = values => {
@@ -83,5 +103,5 @@ const validate = values => {
 export default connect(mapStateToProps, mapDispatchToProps)(
   //以下でreduxForm関数で帰ってくる関数の引数にEventsShowを渡している
   //enableReinitialize:true　＝＞initialValuesの値が変わるたびにFormが毎回初期化される
-  reduxForm({ validate, form: 'eventShowForm', enableReinitialize:true })(EventsShow)
+  reduxForm({ validate, form: 'eventShowForm', enableReinitialize: true })(EventsShow)
 )

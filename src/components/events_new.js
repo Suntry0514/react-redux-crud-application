@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'//画面上にリンクを設定
-import { Field, reduxForm} from 'redux-form'
+import { Field, reduxForm, submit } from 'redux-form'
 
 import { postEvent } from '../actions'
 
+import RaisedButton from 'material-ui/RaisedButton'
+import TextFiled from 'material-ui/TextField'
+
 class EventsNew extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
     this.onSubmit = this.onSubmit.bind(this)
   }
@@ -14,17 +17,25 @@ class EventsNew extends Component {
   renderFiled(field) {
     const { input, label, type, meta: { touched, error } } = field
     return (
-      <div>
-        {/*placeholder：灰色の薄透明な文字を表示  {...input}:？？？？？？？？？？？？*/}
-        <input {...input} placeholder={label} type={type} />
-        {/*バリデーションのメッセージ表示 touched：1度でも触ったらtrueになる*/}
-        {touched && error && <span>{error}</span>}
-      </div>
+      <TextFiled
+        hintText={label}
+        floatingLabelText={label}
+        type={type}
+        errorText={touched && error}
+        {...input}
+        fullWidth={true}
+      />
+      /*       <div>
+              {/*placeholder：灰色の薄透明な文字を表示
+              <input {...input} placeholder={label} type={type} />
+              {/*バリデーションのメッセージ表示 touched：1度でも触ったらtrueになる}
+              {touched && error && <span>{error}</span>}
+            </div> */
     )
   }
 
   //valuesの値が入ってくる
-  async onSubmit(values){
+  async onSubmit(values) {
     await this.props.postEvent(values)
     //以下のように記述することで指定したURLのページに実行後、移動することができる。
     this.props.history.push('/')
@@ -32,16 +43,22 @@ class EventsNew extends Component {
 
   render() {
     //handleSubmitはrenderが実行されたときに渡ってくる関数のため、値を渡しておく
-    const {handleSubmit, pristine, submitting, invalid} = this.props
+    const { handleSubmit, pristine, submitting, invalid } = this.props
+    const style = { margin: 12 }
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         <div><Field label="Title" name="title" type="text" component={this.renderFiled} /></div>
         <div><Field label="Body" name="body" type="text" component={this.renderFiled} /></div>
+        <RaisedButton label="Submit" type={"submit"} style={style} disabled={pristine || submitting || invalid} />
+        <RaisedButton label="Cancel" style={style} containerElement={<Link to="/" />} />
+        
+
+        {/*        
         <div>
-          {/*pristine：項目入力時ボタンが押せる、　submitting：ボタンを押した後、ボタンを押せなくする*/}
-          <input type="submit" value="Submit" disabled={pristine||submitting ||invalid} />
+          {/*pristine：項目入力時ボタンが押せる、　submitting：ボタンを押した後、ボタンを押せなくする}
+          <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           <Link to="/">CANCEL</Link>
-        </div>
+        </div> */}
       </form>
     )
   }
@@ -51,9 +68,9 @@ const mapDispatchToProps = ({ postEvent })
 
 const validate = values => {
   const errors = {}
-   //入力されていなかったら
-  if(!values.title) errors.title="Enter a title, please."
-  if(!values.body) errors.body="Enter a body, please."
+  //入力されていなかったら
+  if (!values.title) errors.title = "Enter a title, please."
+  if (!values.body) errors.body = "Enter a body, please."
 
   return errors
 }
