@@ -10,11 +10,17 @@ import { Provider } from 'react-redux';//作成したstoreを全コンポーネ�
 import reducer from './reducers';
 import EventsIndex from './components/events_index';
 import EventsNew from './components/events_new';
+import EventsShow from './components/events_show';
+import { composeWithDevTools } from 'redux-devtools-extension'//redux devtoolsをgoogle chromeで追加する
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const store = createStore(reducer, applyMiddleware(thunk))
+//デバッグの時はcomposeWithDevToolsを使う。
+const enhancer = process.env.NODE_ENV === 'development' ?
+  composeWithDevTools(applyMiddleware(thunk)) : applyMiddleware(thunk)
+
+const store = createStore(reducer, enhancer)
 
 
 ReactDOM.render(
@@ -22,8 +28,11 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <Switch>
-        <Route exact path="/events/new" component={EventsNew} />
+        <Route path="/events/new" component={EventsNew} />
+        {/** :id->：をつけることによって可変的なURLになる(events.indexのrenderEvents()部分参照)。変数名は何でもよい*/}
+        <Route path="/events/:id" component={EventsShow} />
         <Route exact path="/" component={EventsIndex} />
+        <Route exact path="/events" component={EventsIndex} />
       </Switch>
     </BrowserRouter>
   </Provider>,
