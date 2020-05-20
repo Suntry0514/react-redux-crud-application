@@ -11,6 +11,13 @@ class EventsShow extends Component {
     this.onSubmit = this.onSubmit.bind(this)
     this.onDeleteClick = this.onDeleteClick.bind(this)//メソッドとイベントをリンク
   }
+  //レンダリング後、毎回実行される
+  componentDidMount(){
+    const{id} = this.props.match.params
+    //idがあったら
+    if(id)this.props.getEvent(id)
+  }
+
   //入力された値が渡ってくる
   renderFiled(field) {
     const { input, label, type, meta: { touched, error } } = field
@@ -26,7 +33,7 @@ class EventsShow extends Component {
 
   //valuesの値が入ってくる
   async onSubmit(values) {
-    //await this.props.postEvent(values)
+    await this.props.putEvent(values)
     //以下のように記述することで指定したURLのページに実行後、移動することができる。
     this.props.history.push('/')
   }
@@ -41,14 +48,14 @@ class EventsShow extends Component {
   }
   render() {
     //handleSubmitはrenderが実行されたときに渡ってくる関数のため、値を渡しておく
-    const { handleSubmit, pristine, submitting } = this.props
+    const { handleSubmit, pristine, submitting , invalid} = this.props
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         <div><Field label="Title" name="title" type="text" component={this.renderFiled} /></div>
         <div><Field label="Body" name="body" type="text" component={this.renderFiled} /></div>
         <div>
           {/*pristine：項目入力時ボタンが押せる、　submitting：ボタンを押した後、ボタンを押せなくする*/}
-          <input type="submit" value="Submit" disabled={pristine || submitting} />
+          <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           <Link to="/">CANCEL</Link>
           <Link to="/" onClick={this.onDeleteClick}>DELETE</Link>
         </div>
@@ -57,7 +64,12 @@ class EventsShow extends Component {
   }
 }
 
-const mapDispatchToProps = ({ deleteEvent })
+const mapDispatchToProps = ({ deleteEvent ,getEvent, putEvent})
+
+const mapStateToProps=(state, ownProps)=>{
+  const event = state.events[ownProps.match.params.id]
+  return {initialValues: event, event}//左：上記の変数。
+}
 
 const validate = values => {
   const errors = {}
@@ -68,7 +80,8 @@ const validate = values => {
   return errors
 }
 //ここでAppと上記で宣言した関数(⓵、⓶)とを結合する。(reducerのcountのdefaultが実行)
-export default connect(null, mapDispatchToProps)(
+export default connect(mapStateToProps, mapDispatchToProps)(
   //以下でreduxForm関数で帰ってくる関数の引数にEventsShowを渡している
-  reduxForm({ validate, form: 'eventShowForm' })(EventsShow)
+  //enableReinitialize:true　＝＞initialValuesの値が変わるたびにFormが毎回初期化される
+  reduxForm({ validate, form: 'eventShowForm', enableReinitialize:true })(EventsShow)
 )
